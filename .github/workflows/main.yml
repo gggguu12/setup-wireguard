@@ -1,16 +1,27 @@
-- name: Generate WireGuard Key
-  run: |
-    sudo apt update
-    sudo apt install -y wireguard
-    wg genkey | tee privatekey | wg pubkey > publickey
-    echo "PRIVATE_KEY=$(cat privatekey)" >> $GITHUB_ENV
-    echo "PUBLIC_KEY=$(cat publickey)" >> $GITHUB_ENV
+name: Generate WireGuard Key
 
-- name: Setup WireGuard
-  uses: egor-tensin/setup-wireguard@v1
-  with:
-    private_key: ${{ env.PRIVATE_KEY }}
-    endpoint: 192.168.1.1:51820
-    endpoint_public_key: ${{ env.PUBLIC_KEY }}
-    ips: 10.0.0.2/24
-    allowed_ips: 0.0.0.0/0
+on: push
+
+jobs:
+  setup-wireguard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Generate WireGuard Keys
+        run: |
+          sudo apt update
+          sudo apt install -y wireguard
+          wg genkey | tee privatekey | wg pubkey > publickey
+          echo "PRIVATE_KEY=$(cat privatekey)" >> $GITHUB_ENV
+          echo "PUBLIC_KEY=$(cat publickey)" >> $GITHUB_ENV
+
+      - name: Setup WireGuard
+        uses: egor-tensin/setup-wireguard@v1
+        with:
+          private_key: ${{ env.PRIVATE_KEY }}
+          endpoint: 192.168.1.1:51820
+          endpoint_public_key: ${{ env.PUBLIC_KEY }}
+          ips: 10.0.0.2/24
+          allowed_ips: 0.0.0.0/0
