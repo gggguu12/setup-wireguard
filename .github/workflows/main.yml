@@ -1,0 +1,11 @@
+- name: Setup WireGuard
+        uses: egor-tensin/setup-wireguard@v1
+        with:
+          config: |
+            [Interface]
+            PrivateKey = XYZ9876543210
+            Address = 10.0.0.2/24
+            [Peer]
+            PublicKey = ABCDEFG1234567890
+            Endpoint = 192.168.1.1:51820
+            AllowedIPs = 0.0.0.0/0
